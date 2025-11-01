@@ -1,0 +1,23 @@
+[project]
+name = "project-sncf"
+version = "0.1.0"
+description = "Streamlit dashboard pour SNCF retards"
+authors = [
+    {name = "Amel et Juan"}
+]
+readme = "README.md"
+requires-python = "^3.10"
+dependencies = [
+    "streamlit (>=1.51.0,<2.0.0)",
+    "pandas (>=2.3.3,<3.0.0)",
+    "matplotlib (>=3.10.7,<4.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "plotly (>=6.3.1,<7.0.0)",
+    "requests (>=2.32.5,<3.0.0)",
+    "scikit-learn (>=1.7.2,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
