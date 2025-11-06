@@ -5,8 +5,6 @@ set -e
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-poetry add folium streamlit_folium geopy streamlit
-
 # Activate virtual environment (Windows layout)
 source .venv/Scripts/activate
 
