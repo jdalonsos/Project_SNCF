@@ -257,7 +257,6 @@ def main() -> None:
     m = folium.Map(location=[centre_lat, centre_lon], zoom_start=6)
 
     # Colour scale thresholds
-    max_rate = agg["taux_retard"].max()
     for _, row in agg.iterrows():
         lat, lon = row["coords"]
         taux = row["taux_retard"]
