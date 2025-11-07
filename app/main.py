@@ -1,29 +1,28 @@
 from __future__ import annotations
 
 import base64
-from pathlib import Path
 import sys
+from pathlib import Path
+from typing import Optional
+
+import folium
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+from streamlit_folium import st_folium
+
+from src.data.collect_api import (
+    get_gares_coordinates,
+    telecharger_donnees_sncf,
+    trouver_coordonnees,
+)
+from src.data.transform import enrichir_base, generer_metrics_synthetiques
 
 # ✨ make "src/" importable no matter where Streamlit runs from
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from typing import Optional, Tuple
-
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-import streamlit as st
-import folium
-from streamlit_folium import st_folium
-
-from src.data.collect_api import (
-    telecharger_donnees_sncf,
-    get_gares_coordinates,
-    trouver_coordonnees,
-)
-from src.data.transform import enrichir_base, generer_metrics_synthetiques
 
 
 def get_base64_image(image_path: str) -> Optional[str]:
@@ -256,13 +255,15 @@ def main() -> None:
     centre_lon = sum(lons) / len(lons)
     m = folium.Map(location=[centre_lat, centre_lon], zoom_start=6)
 
+    tx_acceptable = 20
+    tx_limite = 50
     # Colour scale thresholds
     for _, row in agg.iterrows():
         lat, lon = row["coords"]
         taux = row["taux_retard"]
-        if taux < 20:
+        if taux < tx_acceptable:
             color = "#4CAF50"  # green
-        elif taux < 50:
+        elif taux < tx_limite:
             color = "#FFC107"  # orange
         else:
             color = "#F44336"  # red
