@@ -11,6 +11,10 @@ import plotly.graph_objects as go
 import streamlit as st
 from streamlit_folium import st_folium
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent  # Project_SNCF/
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from src.data.collect_api import (
     get_gares_coordinates,
     telecharger_donnees_sncf,
@@ -18,10 +22,6 @@ from src.data.collect_api import (
 )
 from src.data.transform import enrichir_base, generer_metrics_synthetiques
 
-# ✨ make "src/" importable no matter where Streamlit runs from
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
 
 
 
@@ -288,3 +288,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
