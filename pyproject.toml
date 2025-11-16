@@ -1,26 +1,24 @@
-[project]
+[tool.poetry]
 name = "project-sncf"
 version = "0.1.0"
 description = "Streamlit dashboard pour SNCF retards"
-authors = [
-    {name = "Amel et Juan"}
-]
+authors = ["Amel et Juan"]
 readme = "README.md"
-requires-python = ">=3.10"
-dependencies = [
-    "streamlit (>=1.51.0,<2.0.0)",
-    "pandas (>=2.3.3,<3.0.0)",
-    "matplotlib (>=3.10.7,<4.0.0)",
-    "seaborn (>=0.13.2,<0.14.0)",
-    "plotly (>=6.3.1,<7.0.0)",
-    "requests (>=2.32.5,<3.0.0)",
-    "scikit-learn (>=1.7.2,<2.0.0)",
-    "folium (>=0.20.0,<0.21.0)",
-    "streamlit-folium (>=0.25.3,<0.26.0)",
-    "geopy (>=2.4.1,<3.0.0)",
-    "ruff (>=0.14.3,<0.15.0)"
-]
+package-mode = false
 
+[tool.poetry.dependencies]
+python = ">=3.10"
+streamlit = ">=1.51.0,<2.0.0"
+pandas = ">=2.3.3,<3.0.0"
+matplotlib = ">=3.10.7,<4.0.0"
+seaborn = ">=0.13.2,<0.14.0"
+plotly = ">=6.3.1,<7.0.0"
+requests = ">=2.32.5,<3.0.0"
+scikit-learn = ">=1.7.2,<2.0.0"
+folium = ">=0.20.0,<0.21.0"
+streamlit-folium = ">=0.25.3,<0.26.0"
+geopy = ">=2.4.1,<3.0.0"
+ruff = ">=0.14.3,<0.15.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

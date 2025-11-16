@@ -1,7 +1,6 @@
 # src/data/collect_api.py
-import requests
 import pandas as pd
-
+import requests
 
 BASE_URL = "https://ressources.data.sncf.com/api/records/1.0/search/"
 DATASET = "regularite-mensuelle-tgv-aqst"
