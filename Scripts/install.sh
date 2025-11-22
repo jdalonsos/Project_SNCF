@@ -12,3 +12,8 @@ fi
 
 pip install --upgrade pip
 pip install poetry
+# Tell Poetry to use *this* environment (no extra virtualenv)
+poetry config virtualenvs.create false --local || true
+
+# Install project dependencies (including streamlit)
+poetry install --no-interaction --no-ansi

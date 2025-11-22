@@ -10,52 +10,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc build-essential curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the project (Dockerfile lives inside Project_SNCF)
+# Copy project
 COPY . /app
 
-RUN chmod +x /app/Scripts/*.sh || true
+# 🔧 Fix Windows CRLF and make scripts executable
+RUN sed -i 's/\r$//' /app/Scripts/*.sh && \
+    chmod +x /app/Scripts/*.sh
 
-#
-# Create docker_install.sh (POSIX version of your Scripts/install.sh)
-#
-RUN /bin/sh -c "printf '%s\n' \
-    '#!/usr/bin/env bash' \
-    'set -e' \
-    'cd /app' \
-    'python3 -m venv .venv' \
-    'source .venv/bin/activate' \
-    'pip install --upgrade pip' \
-    'pip install poetry' \
-    'poetry config virtualenvs.create false --local || true' \
-    'poetry install --no-interaction --no-ansi --no-root' \
-    > /app/Scripts/docker_install.sh"
-
-RUN chmod +x /app/Scripts/docker_install.sh
-
-# Run dependency install at build time
-RUN /app/Scripts/docker_install.sh
-
-
-#
-# Create docker_launch.sh (POSIX version of launch.sh)
-#
-RUN /bin/sh -c "printf '%s\n' \
-    '#!/usr/bin/env bash' \
-    'set -euo pipefail' \
-    '' \
-    'printf \"\\n==============================================\\n\"' \
-    'printf \"Streamlit app (open in your browser):\\n\"' \
-    'printf \"  • http://localhost:8501\\n\"' \
-    'printf \"  • http://host.docker.internal:8501  (if supported)\\n\\n\"' \
-    'printf \"==============================================\\n\\n\"' \
-    '' \
-    'cd /app' \
-    'source .venv/bin/activate' \
-    'exec poetry run streamlit run app/main.py --server.address 0.0.0.0 --server.port 8501' \
-    > /app/Scripts/docker_launch.sh"
-
-RUN chmod +x /app/Scripts/docker_launch.sh
+# Install dependencies using your install.sh
+RUN /app/Scripts/install.sh
 
 EXPOSE 8501
 
-CMD ["/bin/bash", "Scripts/docker_launch.sh"]
+CMD ["/bin/bash", "Scripts/launch.sh"]
