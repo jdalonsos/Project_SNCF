@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-# Go to project root
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-# Activate virtual environment (Windows layout)
-source .venv/Scripts/activate
+# Activate Windows OR Linux venv
+if [ -f ".venv/Scripts/activate" ]; then
+    source .venv/Scripts/activate
+else
+    source .venv/bin/activate
+fi
 
-# Run Streamlit app with Poetry
-poetry run streamlit run app/main.py
+poetry run streamlit run app/main.py --server.address 0.0.0.0 --server.port 8501
