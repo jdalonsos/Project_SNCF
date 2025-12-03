@@ -6,8 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc build-essential curl && \
+RUN apt-get update && apt-get install -y --no-install-recommends\
+    gcc build-essential curl jq && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy project
@@ -19,6 +19,9 @@ RUN sed -i 's/\r$//' /app/Scripts/*.sh && \
 
 # Install dependencies using your install.sh
 RUN /app/Scripts/install.sh
+
+# Collect data
+RUN /app/Scripts/collect_api.sh
 
 EXPOSE 8501
 

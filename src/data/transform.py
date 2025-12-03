@@ -2,6 +2,16 @@
 import pandas as pd
 
 
+def charger_json_local(path: str = "data/raw/sncf_data.json") -> pd.DataFrame:
+    """Charge les données SNCF déjà collectées en JSON."""
+    try:
+        df = pd.read_json(path)
+    except Exception as e:
+        print(f"Erreur lors du chargement du JSON : {e}")
+        return pd.DataFrame()
+
+    return df
+
 def get_gares_coordinates() -> dict:
     """Dico de coords"""
     return {

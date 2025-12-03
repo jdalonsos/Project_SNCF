@@ -17,8 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import des modules de collecte et transformation
-from src.data.collect_api import telecharger_donnees_sncf
-from src.data.transform import (
+from src.data.transform import ( charger_json_local,
     filtrer_par_periode, 
     enrichir_base, 
     generer_metrics_synthetiques, 
@@ -138,7 +137,7 @@ st.markdown("---")
 def charger_donnees(nb_annees=5):
     """Charge et enrichit les données SNCF"""
     # 1. Téléchargement des données brutes
-    df = telecharger_donnees_sncf()
+    df = charger_json_local()
 
     if df.empty:
         return df
@@ -235,7 +234,7 @@ with st.sidebar:
     # Type de service
     st.markdown("### Type de service")
     services_dispo = ["Tous"] + sorted(df_temp.dropna(subset=['service'])['service'].unique().tolist())
-    
+
     filtre_service = st.selectbox(
         "Service",
         services_dispo,
@@ -243,12 +242,12 @@ with st.sidebar:
         key="select_service",
         help="National ou International"
     )
-    
+
     if filtre_service != "Tous":
         df_temp = df_temp[df_temp['service'] == filtre_service]
-    
+
     st.markdown("---")
-    
+
     nb_liaisons_disponibles = len(df_temp)
     st.caption(f"💡 {nb_liaisons_disponibles} liaison(s) disponible(s)")
     st.caption(f"📊 Base totale : {len(df):,} lignes".replace(',', ' '))
@@ -289,7 +288,7 @@ def creer_df_filtre_prev(df, annees_selectionnees,
 
 
 df_filtre_prev, annees_prev = creer_df_filtre_prev(
-    df, 
+    df,
     annees_selectionnees,
     filtre_service,
     filtre_gare_depart,
@@ -324,7 +323,7 @@ def get_card_color_by_evolution(value, is_inverse=False):
     Retourne la couleur selon l'évolution
     is_inverse=True pour les métriques où une HAUSSE est MAUVAISE
     """
-    if abs(value) < 0.5:
+    if abs(value) < 0.5:  # noqa: PLR2004
         return "#6c757d", "→", "stable"
 
     if is_inverse:
@@ -361,7 +360,7 @@ with col1:
         emoji = "⚠️"
     else:
         emoji = "🚨"
-    
+
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, {card_color}20, {card_color}40); 
                 padding: 1.5rem; 
@@ -411,9 +410,9 @@ with col2:
         emoji = "⚠️"
     else:
         emoji = "🚨"
-    
+
     one_in_x = int(total_trains_current / very_late_30min_current) if very_late_30min_current > 0 else 0
-    
+
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, {card_color}20, {card_color}40); 
                 padding: 1.5rem; 
@@ -464,19 +463,19 @@ with col3:
         'Gare': '🏢',
         'Affluence': '👥'
     }
-    
+
     cause_moyenne_current = {causes_labels[c]: df_current[c].mean() for c in causes}
     cause_principale = max(cause_moyenne_current, key=cause_moyenne_current.get)
     valeur_cause_current = cause_moyenne_current[cause_principale]
-    
+
     cause_moyenne_previous = {causes_labels[c]: df_previous[c].mean() for c in causes} if len(df_previous) > 0 else cause_moyenne_current
     valeur_cause_previous = cause_moyenne_previous.get(cause_principale, valeur_cause_current)
-    
+
     evolution_cause = ((valeur_cause_current - valeur_cause_previous) / valeur_cause_previous * 100) if valeur_cause_previous > 0 else 0
     card_color, arrow_cause, _ = get_card_color_by_evolution(evolution_cause, is_inverse=True)
-    
+
     emoji_cause = causes_emojis.get(cause_principale, '📊')
-    
+
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, {card_color}20, {card_color}40); 
                 padding: 1.5rem; 
@@ -589,18 +588,18 @@ else:
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)"
     )
-    
+
     fig_temporal.update_xaxes(
         tickangle=45,
         dtick="M3",
         tickformat="%b %Y",
         gridcolor="rgba(255,255,255,0.1)"
     )
-    
+
     fig_temporal.update_yaxes(
         gridcolor="rgba(255,255,255,0.1)"
     )
-    
+
     st.plotly_chart(fig_temporal, use_container_width=True)
 
 st.markdown("---")
@@ -817,14 +816,14 @@ if nb_trajets > 0:
         'nb_train_prevu': 'sum',
         'retard_moyen_arrivee': 'mean'
     }).reset_index()
-    
+
     trajets_temp = trajets_temp[trajets_temp['gare_depart'] != trajets_temp['gare_arrivee']].copy()
     trajets_temp['taux_retard'] = (trajets_temp['nb_train_retard_arrivee'] / trajets_temp['nb_train_prevu']) * 100
     trajets_temp = trajets_temp.sort_values('nb_train_retard_arrivee', ascending=False)
-    
+
     paires_vues = set()
     trajets_selectionnes = []
-    
+
     for _, row in trajets_temp.iterrows():
         paire = tuple(sorted([row['gare_depart'], row['gare_arrivee']]))
         if paire not in paires_vues:
@@ -832,12 +831,12 @@ if nb_trajets > 0:
             paires_vues.add(paire)
             if len(trajets_selectionnes) >= nb_trajets:
                 break
-    
+
     # Flèches animées avec AntPath
     for trajet in trajets_selectionnes:
         coord_depart = trouver_coordonnees(trajet['gare_depart'], gares_coords)
         coord_arrivee = trouver_coordonnees(trajet['gare_arrivee'], gares_coords)
-        
+
         if coord_depart and coord_arrivee:
             taux = trajet['taux_retard']
             couleur_ligne = "#000000" if taux > 20 else "#050505" if taux > 10 else "#000000"
