@@ -17,13 +17,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import des modules de collecte et transformation
-from src.data.collect_api import (
-    get_gares_coordinates,
-    telecharger_donnees_sncf,
-    trouver_coordonnees,
+from src.data.collect_api import telecharger_donnees_sncf
+from src.data.transform import (
+    filtrer_par_periode, 
+    enrichir_base, 
+    generer_metrics_synthetiques, 
+    get_gares_coordinates, 
+    trouver_coordonnees
 )
-from src.data.transform import enrichir_base, generer_metrics_synthetiques
-
 st.set_page_config(
     page_title="Dashboard Retards SNCF",
     page_icon="LogoSNCF.png",
@@ -136,10 +137,21 @@ st.markdown("---")
 @st.cache_data(show_spinner=False)
 def charger_donnees(nb_annees=5):
     """Charge et enrichit les données SNCF"""
-    df = telecharger_donnees_sncf(nb_annees=nb_annees)
-    if not df.empty:
-        df = enrichir_base(df)
-    return df
+    # 1. Téléchargement des données brutes
+    df = telecharger_donnees_sncf()
+
+    if df.empty:
+        return df
+
+    # 2. Filtrage par période (crée la colonne 'Date')
+    df = filtrer_par_periode(df, nb_annees=nb_annees)
+
+    if df.empty:
+        return df
+
+    # 3. Enrichissement (ajoute Year, Month, colonnes par défaut)
+    return enrichir_base(df)
+
 
 
 if 'df' not in st.session_state:
