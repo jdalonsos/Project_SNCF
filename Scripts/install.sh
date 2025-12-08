@@ -11,6 +11,7 @@ else
 fi
 
 pip install --upgrade pip
+export PIP_DEFAULT_TIMEOUT=600
 pip install poetry
 # Tell Poetry to use *this* environment (no extra virtualenv)
 poetry config virtualenvs.create false --local || true
